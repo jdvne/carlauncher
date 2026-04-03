@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'org.devines.carlauncher'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "org.devines.carlauncher"
@@ -26,6 +26,12 @@ android {
         }
     }
 
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "carlauncher.apk"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -36,6 +42,7 @@ android {
 }
 
 dependencies {
-    // AndroidX RecyclerView — only external dep; no Play Services required
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    // Core needed for FileProvider (used by self-update installer)
+    implementation 'androidx.core:core-ktx:1.12.0'
 }

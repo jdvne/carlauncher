@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "essgoo-launcher"
+rootProject.name = "carlauncher"
 include ':app'

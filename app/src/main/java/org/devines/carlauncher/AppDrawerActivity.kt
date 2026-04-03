@@ -6,11 +6,16 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class AppDrawerActivity : Activity() {
+
+    private var pendingUpdate: java.io.File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,9 +24,22 @@ class AppDrawerActivity : Activity() {
         }
         setContentView(R.layout.activity_app_drawer)
 
-        findViewById<android.widget.ImageView>(R.id.btnHome).setOnClickListener {
+        findViewById<ImageView>(R.id.btnHome).setOnClickListener {
             finish()
             overridePendingTransition(0, 0)
+        }
+
+        findViewById<LinearLayout>(R.id.btnUpdate).setOnClickListener {
+            val update = pendingUpdate
+            if (update != null) {
+                promptInstallUpdate(update)
+            } else {
+                Toast.makeText(this, "No carlauncher.apk found on USB", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        findViewById<LinearLayout>(R.id.btnInfo).setOnClickListener {
+            showInfoDialog()
         }
 
         val appGrid = findViewById<RecyclerView>(R.id.appGrid)
@@ -29,6 +47,42 @@ class AppDrawerActivity : Activity() {
         val spanCount = (resources.displayMetrics.widthPixels / columnWidth).coerceAtLeast(1)
         appGrid.layoutManager = GridLayoutManager(this, spanCount)
         appGrid.adapter = AppGridAdapter(loadInstalledApps()) { launchApp(it) }
+
+        // Check for update silently in background thread so it doesn't block the UI
+        Thread {
+            val update = findAvailableUpdate()
+            runOnUiThread { setUpdateState(update) }
+        }.start()
+    }
+
+    private fun showInfoDialog() {
+        android.app.AlertDialog.Builder(this)
+            .setTitle("carlauncher")
+            .setMessage(
+                "To update:\n" +
+                "1. Build a new APK in Android Studio\n" +
+                "2. Rename it to carlauncher.apk\n" +
+                "3. Copy it to the root of a USB stick\n" +
+                "4. Plug the USB stick into the head unit\n" +
+                "5. Open All Apps — the update button will turn green if a newer version is detected\n" +
+                "6. Tap the update button to install"
+            )
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    private fun setUpdateState(update: UpdateResult?) {
+        pendingUpdate = update
+        val icon  = findViewById<ImageView>(R.id.iconUpdate)
+        val label = findViewById<TextView>(R.id.labelUpdate)
+        if (update != null) {
+            icon.setImageResource(R.drawable.ic_update_available)
+            label.text = "Update available"
+            label.setTextColor(0xFF4CAF50.toInt()) // green
+        } else {
+            icon.setImageResource(R.drawable.ic_update)
+            label.text = ""
+        }
     }
 
     @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")

@@ -14,14 +14,14 @@ In Android Studio: **Build → Build Bundle(s) / APK(s) → Build APK(s)**
 
 The APK will be at:
 ```
-app/build/outputs/apk/debug/app-debug.apk
+app/build/outputs/apk/debug/carlauncher.apk
 ```
 
 ---
 
 ### 2. Copy to a USB Stick
 
-Copy `app-debug.apk` to the root of a FAT32-formatted USB stick.
+Copy `carlauncher.apk` to the root of a FAT32-formatted USB stick.
 
 ---
 
@@ -29,7 +29,7 @@ Copy `app-debug.apk` to the root of a FAT32-formatted USB stick.
 
 1. Plug the USB stick into the head unit
 2. Open the **File Manager** app on the head unit
-3. Navigate to the USB drive and tap `app-debug.apk`
+3. Navigate to the USB drive and tap `carlauncher.apk`
 4. Follow the install prompts — tap **Install** when asked
 
 ---
@@ -44,21 +44,23 @@ If no dialog appears, set it manually in **Settings → Apps → Default Apps �
 
 ---
 
-### 5. Assign the CarLink and Radio Tiles
+### 5. Assign App Tiles
 
-The two left tiles on the home screen are configurable:
+The three left tiles on the home screen are configurable:
 
-1. **Tap** either tile (shows `+` / "Tap to set")
+1. **Tap** any tile (shows `+` / "Tap to set")
 2. Pick the app from the list
-3. **Long-press** either tile at any time to reassign it
+3. **Long-press** any tile at any time to reassign it
 
 ---
 
 ## Updating the App
 
-1. Build a new APK in Android Studio
-2. Copy the new `app-debug.apk` to the USB stick
-3. Install it from the File Manager — it will overwrite the existing version and keep your tile settings
+1. Build a new APK in Android Studio — it outputs as `carlauncher.apk` automatically
+2. Copy `carlauncher.apk` to the root of a USB stick
+3. Plug the USB stick into the head unit
+4. Open **All Apps** — the update button in the top-right will turn green if `carlauncher.apk` is detected
+5. Tap the update button and select **Install**
 
 ---
 
@@ -70,6 +72,7 @@ The two left tiles on the home screen are configurable:
 | No install prompt when tapping APK | Go to Settings → Apps → Special App Access → Install Unknown Apps → File Manager → Allow |
 | Launcher reverts after reboot | Settings → Apps → Default Apps → Home App → select carlauncher |
 | Tiles reset after update | Long-press each tile and reassign |
+| Update button says no APK found | Make sure the file is named exactly `carlauncher.apk` and is at the root of the USB stick |
 | Factory settings locked | Try password `8888` or `3368` |
 
 ---
