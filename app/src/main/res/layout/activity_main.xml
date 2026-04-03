@@ -123,10 +123,11 @@
                 android:contentDescription="Settings" />
 
             <TextView
+                android:id="@+id/labelSettings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Settings"
-                android:textColor="@color/text_primary"
+                android:text="Tap to set"
+                android:textColor="@color/text_secondary"
                 android:textSize="18sp"
                 android:fontFamily="@font/porsche_v3"
                 android:layout_marginTop="8dp" />

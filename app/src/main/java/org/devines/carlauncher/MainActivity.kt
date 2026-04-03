@@ -15,10 +15,10 @@ import android.widget.Toast
 class MainActivity : Activity() {
 
     companion object {
-        private const val PREFS        = "launcher_prefs"
-        private const val KEY_CARLINK  = "pkg_slot_carlink"
-        private const val KEY_RADIO    = "pkg_slot_radio"
-        private const val PKG_SETTINGS = "com.android.settings"
+        private const val PREFS           = "launcher_prefs"
+        private const val KEY_CARLINK     = "pkg_slot_carlink"
+        private const val KEY_RADIO       = "pkg_slot_radio"
+        private const val KEY_SETTINGS    = "pkg_slot_settings"
     }
 
     private lateinit var prefs: SharedPreferences
@@ -33,15 +33,8 @@ class MainActivity : Activity() {
 
         bindConfigurableTile(R.id.tileCarLink,  R.id.iconCarLink,  R.id.labelCarLink,  KEY_CARLINK)
         bindConfigurableTile(R.id.tileRadio,    R.id.iconRadio,    R.id.labelRadio,    KEY_RADIO)
+        bindConfigurableTile(R.id.tileSettings, R.id.iconSettings, R.id.labelSettings, KEY_SETTINGS)
 
-        // Settings package is fixed — no picker needed
-        val settingsIcon = findViewById<ImageView>(R.id.iconSettings)
-        try {
-            settingsIcon.setImageDrawable(packageManager.getApplicationIcon(PKG_SETTINGS))
-        } catch (e: PackageManager.NameNotFoundException) {
-            settingsIcon.setImageDrawable(getDrawable(android.R.drawable.sym_def_app_icon))
-        }
-        findViewById<LinearLayout>(R.id.tileSettings).setOnClickListener { launchPackage(PKG_SETTINGS) }
         findViewById<LinearLayout>(R.id.tileAllApps).setOnClickListener {
             startActivity(Intent(this, AppDrawerActivity::class.java))
             overridePendingTransition(0, 0)
@@ -70,7 +63,6 @@ class MainActivity : Activity() {
                 label.setTextColor(getColor(R.color.text_primary))
                 tile.setOnClickListener { launchPackage(pkg) }
             } catch (e: PackageManager.NameNotFoundException) {
-                // Was installed when saved but has since been removed — reset
                 prefs.edit().remove(prefKey).apply()
                 setUnassignedState(tile, icon, label, prefKey)
             }
@@ -91,13 +83,10 @@ class MainActivity : Activity() {
         label.setTextColor(getColor(R.color.text_secondary))
         tile.setOnClickListener {
             showAppPicker(prefKey) {
-                val (iconId, labelId) = when (prefKey) {
-                    KEY_CARLINK -> R.id.iconCarLink to R.id.labelCarLink
-                    else        -> R.id.iconRadio   to R.id.labelRadio
-                }
-                val tileId = when (prefKey) {
-                    KEY_CARLINK -> R.id.tileCarLink
-                    else        -> R.id.tileRadio
+                val (tileId, iconId, labelId) = when (prefKey) {
+                    KEY_CARLINK  -> Triple(R.id.tileCarLink,  R.id.iconCarLink,  R.id.labelCarLink)
+                    KEY_RADIO    -> Triple(R.id.tileRadio,    R.id.iconRadio,    R.id.labelRadio)
+                    else         -> Triple(R.id.tileSettings, R.id.iconSettings, R.id.labelSettings)
                 }
                 bindConfigurableTile(tileId, iconId, labelId, prefKey)
             }
@@ -110,7 +99,6 @@ class MainActivity : Activity() {
         val pm = packageManager
         val intent = Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_LAUNCHER) }
         val apps = queryLaunchableApps(pm, intent)
-
             .filter { it.activityInfo.packageName != packageName }
             .map { AppInfo(it.activityInfo.packageName, it.loadLabel(pm).toString(), it.loadIcon(pm)) }
             .sortedBy { it.label.lowercase() }
