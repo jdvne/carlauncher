@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#0D0D0D</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#777777</color>
+    <color name="divider">#2A2A2A</color>
+    <!-- Used by app drawer item press highlight -->
+    <color name="item_pressed">#22FFFFFF</color>
+    <!-- app_label alias kept for item_app.xml -->
+    <color name="app_label">#FFFFFF</color>
+</resources>

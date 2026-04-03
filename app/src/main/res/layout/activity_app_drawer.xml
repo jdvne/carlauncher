@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <!-- Toolbar with Home button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:background="@color/background">
+
+        <ImageView
+            android:id="@+id/btnHome"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:padding="16dp"
+            android:src="@drawable/ic_home"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_tile"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Home" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="All Apps"
+            android:textColor="@color/text_secondary"
+            android:textSize="22sp"
+            android:gravity="center"
+            android:fontFamily="@font/porsche_v3" />
+
+        <!-- Spacer to balance the home button and keep title centered -->
+        <View
+            android:layout_width="80dp"
+            android:layout_height="80dp" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/appGrid"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none"
+        android:overScrollMode="never"
+        android:clipToPadding="false"
+        android:padding="@dimen/grid_cell_padding" />
+
+</LinearLayout>

@@ -1,0 +1,27 @@
+# Build outputs
+build/
+app/build/
+
+# Gradle
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+captures/
+.navigation/
+
+# Signing keys — never commit these
+*.jks
+*.keystore
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Zip files — extracted assets are committed directly
+*.zip

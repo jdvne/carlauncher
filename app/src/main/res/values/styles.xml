@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Full-screen, no status bar — reclaims every pixel on the small head-unit screen -->
+    <style name="Theme.Launcher" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <!-- Match nav/status bar colors to background so no gap is visible during transitions -->
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <!-- Disable window animation — avoids jank on low-end CPU -->
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+</resources>

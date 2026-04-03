@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Single app cell: icon above label, large touch target for in-car tapping -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/grid_column_width"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="@dimen/grid_cell_padding"
+    android:background="@drawable/bg_item_pressed"
+    android:focusable="true"
+    android:clickable="true">
+
+    <ImageView
+        android:id="@+id/appIcon"
+        android:layout_width="@dimen/app_icon_size"
+        android:layout_height="@dimen/app_icon_size"
+        android:scaleType="fitCenter"
+        android:contentDescription="" />
+
+    <TextView
+        android:id="@+id/appLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/app_label"
+        android:textSize="@dimen/app_label_size"
+        android:fontFamily="@font/porsche_v3"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end" />
+
+</LinearLayout>

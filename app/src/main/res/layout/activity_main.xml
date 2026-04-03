@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <!-- Top half: clock -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextClock
+            android:id="@+id/clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="h:mm a"
+            android:format24Hour="H:mm"
+            android:textColor="@color/text_primary"
+            android:textSize="100sp"
+            android:fontFamily="@font/porsche_v3" />
+
+        <TextClock
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="EEEE, MMMM d"
+            android:format24Hour="EEEE, MMMM d"
+            android:textColor="@color/text_secondary"
+            android:textSize="30sp"
+            android:fontFamily="@font/porsche_v3"
+            android:layout_marginTop="6dp" />
+
+    </LinearLayout>
+
+    <!-- Bottom half: 4 tiles, no dividers -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/tileCarLink"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_tile"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/iconCarLink"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="CarLink" />
+
+            <TextView
+                android:id="@+id/labelCarLink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap to set"
+                android:textColor="@color/text_secondary"
+                android:textSize="18sp"
+                android:fontFamily="@font/porsche_v3"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tileRadio"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_tile"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/iconRadio"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="Radio" />
+
+            <TextView
+                android:id="@+id/labelRadio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap to set"
+                android:textColor="@color/text_secondary"
+                android:textSize="18sp"
+                android:fontFamily="@font/porsche_v3"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tileSettings"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_tile"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/iconSettings"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="Settings" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Settings"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:fontFamily="@font/porsche_v3"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tileAllApps"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_tile"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_all_apps"
+                android:contentDescription="All Apps" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All Apps"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:fontFamily="@font/porsche_v3"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

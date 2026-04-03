@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Screen: 9" 1280×720 (~163 dpi). Larger targets suit in-car glance tapping. -->
+    <dimen name="app_icon_size">120dp</dimen>
+    <dimen name="app_label_size">16sp</dimen>
+    <dimen name="grid_cell_padding">14dp</dimen>
+    <!-- 180dp column → ~6 columns across 1280px at 163dpi; larger tiles for in-car use -->
+    <dimen name="grid_column_width">180dp</dimen>
+</resources>
