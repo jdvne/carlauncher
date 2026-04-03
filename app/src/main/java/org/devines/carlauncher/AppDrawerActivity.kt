@@ -12,10 +12,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.io.File
 
 class AppDrawerActivity : Activity() {
 
-    private var pendingUpdate: java.io.File? = null
+    private var pendingUpdate: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +27,7 @@ class AppDrawerActivity : Activity() {
 
         findViewById<ImageView>(R.id.btnHome).setOnClickListener {
             finish()
-            overridePendingTransition(0, 0)
+            noTransition()
         }
 
         findViewById<LinearLayout>(R.id.btnUpdate).setOnClickListener {
@@ -71,7 +72,7 @@ class AppDrawerActivity : Activity() {
             .show()
     }
 
-    private fun setUpdateState(update: UpdateResult?) {
+    private fun setUpdateState(update: File?) {
         pendingUpdate = update
         val icon  = findViewById<ImageView>(R.id.iconUpdate)
         val label = findViewById<TextView>(R.id.labelUpdate)
@@ -85,7 +86,7 @@ class AppDrawerActivity : Activity() {
         }
     }
 
-    @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         super.onBackPressed()
         overridePendingTransition(0, 0)

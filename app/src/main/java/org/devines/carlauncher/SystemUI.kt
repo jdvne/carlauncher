@@ -20,6 +20,17 @@ fun queryLaunchableApps(pm: PackageManager, intent: Intent): List<ResolveInfo> {
     }
 }
 
+/** Suppresses the activity enter/exit animation — prevents nav bar flash during transitions. */
+fun Activity.noTransition() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, 0, 0)
+        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, 0, 0)
+    } else {
+        @Suppress("DEPRECATION")
+        overridePendingTransition(0, 0)
+    }
+}
+
 /** Hides the navigation bar (and status bar) in sticky immersive mode. */
 fun Activity.hideSystemUI() {
     // Transparent bars so any brief re-appearance blends with the background

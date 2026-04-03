@@ -37,7 +37,7 @@ class MainActivity : Activity() {
 
         findViewById<LinearLayout>(R.id.tileAllApps).setOnClickListener {
             startActivity(Intent(this, AppDrawerActivity::class.java))
-            overridePendingTransition(0, 0)
+            noTransition()
         }
     }
 
