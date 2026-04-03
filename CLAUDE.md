@@ -1,8 +1,8 @@
-# ESSGOO Car Head Unit Launcher
+# carlauncher
 
 ## Project Overview
 
-A custom Android launcher APK for an ESSGOO aftermarket car head unit running Android 10 (AOSP). The launcher replaces the stock manufacturer home screen with a fully customizable, lightweight alternative tailored for in-car use.
+A minimal dark-theme Android launcher for aftermarket car head units. Replaces the stock manufacturer home screen with a clean, fully customizable alternative tailored for in-car use. Built for a 9" 1280×720 Android 13 ESSGOO head unit in a Porsche Cayenne 9PA (2002–2010), but designed to work generically on any landscape Android head unit running API 26+.
 
 ## Target Hardware
 
@@ -18,7 +18,7 @@ A custom Android launcher APK for an ESSGOO aftermarket car head unit running An
 
 ## Goals
 
-- Replace the stock ESSGOO launcher with a clean, fast, fully custom home screen
+- Replace the stock head unit launcher with a clean, fast, fully custom home screen
 - Display installed apps in a touch-friendly grid
 - Launch apps on tap
 - Handle the Home button correctly (launcher must be sticky — no escaping to the stock UI)

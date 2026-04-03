@@ -1,7 +1,8 @@
 # carlauncher
 
-Custom Android launcher for the ESSGOO head unit in a Porsche Cayenne 9PA (2002–2010).
-Dark theme, Porsche font, large touch targets. Home screen shows clock, date, and four app tiles. All Apps opens a full grid.
+Minimal dark-theme Android launcher for aftermarket car head units. Clean home screen with clock, date, and four configurable app tiles. All Apps opens a full grid.
+
+Built for a 9" 1280×720 Android 13 head unit in a Porsche Cayenne 9PA (2002–2010), but should work on any landscape Android head unit running API 26+.
 
 ---
 
@@ -75,4 +76,4 @@ The two left tiles on the home screen are configurable:
 
 ## Note on ADB
 
-ESSGOO head units do not support ADB connections. The USB ports on the unit operate in host mode (for USB drives and CarPlay) and cannot be used for ADB. USB stick installation is the only supported method.
+Many aftermarket head units do not support ADB over USB — the USB ports operate in host mode (for USB drives and CarPlay) rather than device mode. The ESSGOO unit this was built on falls into this category. USB stick installation is the recommended method for units where ADB is unavailable.
