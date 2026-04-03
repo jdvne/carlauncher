@@ -1,5 +1,6 @@
 package org.devines.carlauncher
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -7,6 +8,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -15,13 +17,16 @@ import android.widget.Toast
 class MainActivity : Activity() {
 
     companion object {
-        private const val PREFS           = "launcher_prefs"
-        private const val KEY_CARLINK     = "pkg_slot_carlink"
-        private const val KEY_RADIO       = "pkg_slot_radio"
-        private const val KEY_SETTINGS    = "pkg_slot_settings"
+        private const val PREFS              = "launcher_prefs"
+        private const val KEY_CARLINK        = "pkg_slot_carlink"
+        private const val KEY_RADIO          = "pkg_slot_radio"
+        private const val KEY_SETTINGS       = "pkg_slot_settings"
+        private const val REQUEST_BT_PERM    = 1001
     }
 
     private lateinit var prefs: SharedPreferences
+    private lateinit var bluetoothObserver: BluetoothObserver
+    private lateinit var bluetoothLabel: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +43,46 @@ class MainActivity : Activity() {
         findViewById<LinearLayout>(R.id.tileAllApps).setOnClickListener {
             startActivity(Intent(this, AppDrawerActivity::class.java))
             noTransition()
+        }
+
+        bluetoothLabel = findViewById(R.id.bluetoothLabel)
+        bluetoothObserver = BluetoothObserver(this) { name ->
+            runOnUiThread {
+                if (name != null) {
+                    bluetoothLabel.text = name
+                    bluetoothLabel.visibility = View.VISIBLE
+                } else {
+                    bluetoothLabel.visibility = View.GONE
+                }
+            }
+        }
+        startBluetoothObserver()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        bluetoothObserver.stop()
+    }
+
+    // ── Bluetooth ────────────────────────────────────────────────────
+
+    private fun startBluetoothObserver() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) ==
+                PackageManager.PERMISSION_GRANTED) {
+                bluetoothObserver.start()
+            } else {
+                requestPermissions(arrayOf(Manifest.permission.BLUETOOTH_CONNECT), REQUEST_BT_PERM)
+            }
+        } else {
+            bluetoothObserver.start()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (requestCode == REQUEST_BT_PERM &&
+            grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+            bluetoothObserver.start()
         }
     }
 

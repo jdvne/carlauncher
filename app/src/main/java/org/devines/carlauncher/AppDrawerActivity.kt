@@ -17,6 +17,7 @@ import java.io.File
 class AppDrawerActivity : Activity() {
 
     private var pendingUpdate: File? = null
+    private lateinit var gridAdapter: AppGridAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,24 +33,35 @@ class AppDrawerActivity : Activity() {
 
         findViewById<LinearLayout>(R.id.btnUpdate).setOnClickListener {
             val update = pendingUpdate
-            if (update != null) {
-                promptInstallUpdate(update)
-            } else {
-                Toast.makeText(this, "No carlauncher.apk found on USB", Toast.LENGTH_SHORT).show()
-            }
+            if (update != null) promptInstallUpdate(update)
+            else Toast.makeText(this, "No carlauncher.apk found on USB", Toast.LENGTH_SHORT).show()
         }
 
         findViewById<LinearLayout>(R.id.btnInfo).setOnClickListener {
             showInfoDialog()
         }
 
-        val appGrid = findViewById<RecyclerView>(R.id.appGrid)
+        val appGrid   = findViewById<RecyclerView>(R.id.appGrid)
         val columnWidth = resources.getDimensionPixelSize(R.dimen.grid_column_width)
-        val spanCount = (resources.displayMetrics.widthPixels / columnWidth).coerceAtLeast(1)
-        appGrid.layoutManager = GridLayoutManager(this, spanCount)
-        appGrid.adapter = AppGridAdapter(loadInstalledApps()) { launchApp(it) }
+        val spanCount   = (resources.displayMetrics.widthPixels / columnWidth).coerceAtLeast(1)
+        val glm         = GridLayoutManager(this, spanCount)
 
-        // Check for update silently in background thread so it doesn't block the UI
+        gridAdapter = AppGridAdapter(
+            allApps           = loadInstalledApps(),
+            favorites         = FavoritesStore.load(this),
+            onAppClick        = { launchApp(it) },
+            onFavoriteToggled = { favs -> FavoritesStore.save(this, favs) }
+        )
+
+        glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int) =
+                gridAdapter.spanSizeAt(position, glm.spanCount)
+        }
+        glm.spanSizeLookup.isSpanIndexCacheEnabled = true
+
+        appGrid.layoutManager = glm
+        appGrid.adapter = gridAdapter
+
         Thread {
             val update = findAvailableUpdate()
             runOnUiThread { setUpdateState(update) }
@@ -62,11 +74,12 @@ class AppDrawerActivity : Activity() {
             .setMessage(
                 "To update:\n" +
                 "1. Build a new APK in Android Studio\n" +
-                "2. Rename it to carlauncher.apk\n" +
-                "3. Copy it to the root of a USB stick\n" +
-                "4. Plug the USB stick into the head unit\n" +
-                "5. Open All Apps — the update button will turn green if a newer version is detected\n" +
-                "6. Tap the update button to install"
+                "2. Copy carlauncher.apk to the root of a USB stick\n" +
+                "3. Plug the USB stick into the head unit\n" +
+                "4. Open All Apps — the update button turns green when an APK is found\n" +
+                "5. Tap the update button to install\n\n" +
+                "To favorite an app:\n" +
+                "Long-press any app to add it to the Favorites section at the top."
             )
             .setPositiveButton("OK", null)
             .show()
@@ -79,17 +92,17 @@ class AppDrawerActivity : Activity() {
         if (update != null) {
             icon.setImageResource(R.drawable.ic_update_available)
             label.text = "Update available"
-            label.setTextColor(0xFF4CAF50.toInt()) // green
+            label.setTextColor(0xFF4CAF50.toInt())
         } else {
             icon.setImageResource(R.drawable.ic_update)
             label.text = ""
         }
     }
 
-    @Suppress("OVERRIDE_DEPRECATION")
+    @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
     override fun onBackPressed() {
         super.onBackPressed()
-        overridePendingTransition(0, 0)
+        noTransition()
     }
 
     override fun onResume() {

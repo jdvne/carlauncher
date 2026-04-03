@@ -11,12 +11,28 @@
     android:focusable="true"
     android:clickable="true">
 
-    <ImageView
-        android:id="@+id/appIcon"
+    <!-- FrameLayout lets the star badge overlay the icon corner -->
+    <FrameLayout
         android:layout_width="@dimen/app_icon_size"
-        android:layout_height="@dimen/app_icon_size"
-        android:scaleType="fitCenter"
-        android:contentDescription="" />
+        android:layout_height="@dimen/app_icon_size">
+
+        <ImageView
+            android:id="@+id/appIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:contentDescription="" />
+
+        <ImageView
+            android:id="@+id/favoriteStar"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="top|end"
+            android:src="@drawable/ic_star"
+            android:visibility="gone"
+            android:contentDescription="Favorited" />
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/appLabel"

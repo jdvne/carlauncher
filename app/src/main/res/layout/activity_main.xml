@@ -35,6 +35,20 @@
             android:fontFamily="@font/porsche_v3"
             android:layout_marginTop="6dp" />
 
+        <!-- Bluetooth connected device — hidden when nothing is connected -->
+        <TextView
+            android:id="@+id/bluetoothLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="20sp"
+            android:fontFamily="@font/porsche_v3"
+            android:gravity="center"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/ic_bluetooth"
+            android:visibility="gone" />
+
     </LinearLayout>
 
     <!-- Bottom half: 4 tiles, no dividers -->
