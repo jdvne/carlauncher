@@ -57,6 +57,17 @@ class MainActivity : Activity() {
             }
         }
         startBluetoothObserver()
+
+        // Debug: long-press the clock to toggle a fake BT device (emulator testing only)
+        findViewById<android.widget.TextClock>(R.id.clock).setOnLongClickListener {
+            if (bluetoothLabel.visibility == View.VISIBLE) {
+                bluetoothLabel.visibility = View.GONE
+            } else {
+                bluetoothLabel.text = "Josh's iPhone"
+                bluetoothLabel.visibility = View.VISIBLE
+            }
+            true
+        }
     }
 
     override fun onDestroy() {

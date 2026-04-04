@@ -14,6 +14,10 @@ import android.os.Build
 /**
  * Observes Bluetooth connection state and reports the connected device name.
  * Emits null when no device is connected.
+ *
+ * Uses BluetoothProfile.ServiceListener for the initial state query so we
+ * correctly detect devices that were already connected before the receiver
+ * was registered (common when the launcher restarts).
  */
 class BluetoothObserver(
     private val context: Context,
@@ -22,8 +26,8 @@ class BluetoothObserver(
     private var receiver: BroadcastReceiver? = null
 
     fun start() {
-        // Emit current state immediately
-        onDeviceChanged(queryConnectedDeviceName())
+        // Query current state via profile proxy (async but fast)
+        queryConnectedDeviceName()
 
         // Listen for future connect/disconnect events
         val filter = IntentFilter().apply {
@@ -55,24 +59,32 @@ class BluetoothObserver(
         receiver = null
     }
 
-    private fun queryConnectedDeviceName(): String? {
-        if (!hasBluetoothPermission()) return null
+    /**
+     * Async — connects to the A2DP profile proxy, reads connected devices,
+     * then immediately closes the proxy. Calls onDeviceChanged on the main
+     * thread via the proxy callback (guaranteed by the framework).
+     */
+    private fun queryConnectedDeviceName() {
+        if (!hasBluetoothPermission()) return
         val adapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)
-            ?.adapter ?: return null
-        if (!adapter.isEnabled) return null
-        return try {
-            // Check if any bonded device is connected via headset or A2DP (audio profiles)
-            adapter.bondedDevices
-                ?.firstOrNull { device ->
-                    adapter.getProfileConnectionState(BluetoothProfile.HEADSET) ==
-                        BluetoothProfile.STATE_CONNECTED ||
-                    adapter.getProfileConnectionState(BluetoothProfile.A2DP) ==
-                        BluetoothProfile.STATE_CONNECTED
+            ?.adapter ?: return
+        if (!adapter.isEnabled) return
+
+        adapter.getProfileProxy(context, object : BluetoothProfile.ServiceListener {
+            override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
+                val name = try {
+                    proxy.connectedDevices.firstOrNull()?.let { safeGetName(it) }
+                } catch (e: SecurityException) {
+                    null
                 }
-                ?.let { safeGetName(it) }
-        } catch (e: SecurityException) {
-            null
-        }
+                onDeviceChanged(name)
+                adapter.closeProfileProxy(profile, proxy)
+            }
+
+            override fun onServiceDisconnected(profile: Int) {
+                // Nothing to do — broadcast receiver handles live disconnects
+            }
+        }, BluetoothProfile.A2DP)
     }
 
     private fun safeGetName(device: BluetoothDevice?): String? {

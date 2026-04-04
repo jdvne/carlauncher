@@ -6,6 +6,10 @@ Built for a 9" 1280×720 Android 13 head unit in a Porsche Cayenne 9PA (2002–2
 
 ---
 
+![carlauncher home screen](screenshots/home_configured.png)
+
+---
+
 ## Installing on the Head Unit
 
 ### 1. Build the APK
@@ -51,6 +55,16 @@ The three left tiles on the home screen are configurable:
 1. **Tap** any tile (shows `+` / "Tap to set")
 2. Pick the app from the list
 3. **Long-press** any tile at any time to reassign it
+
+![Tap to set tiles](screenshots/home_empty.png)
+
+---
+
+## App Drawer
+
+Tap **All Apps** to browse every installed app. Long-press any app to add it to the **Favorites** section at the top.
+
+![App drawer](screenshots/app_drawer.png)
 
 ---
 
