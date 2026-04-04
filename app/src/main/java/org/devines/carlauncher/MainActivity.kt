@@ -27,6 +27,7 @@ class MainActivity : Activity() {
     private lateinit var prefs: SharedPreferences
     private lateinit var bluetoothObserver: BluetoothObserver
     private lateinit var bluetoothLabel: TextView
+    private lateinit var bannerSetDefault: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +45,9 @@ class MainActivity : Activity() {
             startActivity(Intent(this, AppDrawerActivity::class.java))
             noTransition()
         }
+
+        bannerSetDefault = findViewById(R.id.bannerSetDefault)
+        bannerSetDefault.setOnClickListener { openSetDefaultLauncherScreen() }
 
         bluetoothLabel = findViewById(R.id.bluetoothLabel)
         bluetoothObserver = BluetoothObserver(this) { name ->
@@ -184,6 +188,7 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
         hideSystemUI()
+        bannerSetDefault.visibility = if (isDefaultLauncher()) View.GONE else View.VISIBLE
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {

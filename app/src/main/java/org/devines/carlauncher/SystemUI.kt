@@ -1,14 +1,53 @@
 package org.devines.carlauncher
 
 import android.app.Activity
+import android.app.role.RoleManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.Color
 import android.os.Build
+import android.provider.Settings
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+
+/** Returns true if this app is currently the default HOME launcher. */
+fun Context.isDefaultLauncher(): Boolean {
+    val intent = Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_HOME) }
+    val info = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+    return info?.activityInfo?.packageName == packageName
+}
+
+/**
+ * Opens the system UI to set this app as the default launcher.
+ * ACTION_HOME_SETTINGS is the most reliable path on AOSP/aftermarket units.
+ * RoleManager (API 29+) is tried first but many AOSP builds don't implement it fully,
+ * so we fall through to Settings if it throws.
+ */
+fun Activity.openSetDefaultLauncherScreen() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        try {
+            val roleManager = getSystemService(RoleManager::class.java)
+            if (roleManager.isRoleAvailable(RoleManager.ROLE_HOME)) {
+                // Must use startActivityForResult — startActivity silently no-ops
+                @Suppress("DEPRECATION")
+                startActivityForResult(
+                    roleManager.createRequestRoleIntent(RoleManager.ROLE_HOME), 0
+                )
+                return
+            }
+        } catch (_: Exception) {
+            // RoleManager not supported on this firmware — fall through
+        }
+    }
+    try {
+        startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
+    } catch (_: Exception) {
+        startActivity(Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS))
+    }
+}
 
 /** Returns all launchable apps using the correct API for the running OS version. */
 fun queryLaunchableApps(pm: PackageManager, intent: Intent): List<ResolveInfo> {
