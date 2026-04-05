@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -46,9 +48,11 @@ class AppDrawerActivity : Activity() {
         val spanCount   = (resources.displayMetrics.widthPixels / columnWidth).coerceAtLeast(1)
         val glm         = GridLayoutManager(this, spanCount)
 
+        val features = FeatureStore.load(this)
         gridAdapter = AppGridAdapter(
             allApps           = loadInstalledApps(),
             favorites         = FavoritesStore.load(this),
+            recentPackages    = if (features.showRecentApps) RecentAppsStore.load(this) else emptyList(),
             onAppClick        = { launchApp(it) },
             onFavoriteToggled = { favs -> FavoritesStore.save(this, favs) }
         )
@@ -69,9 +73,30 @@ class AppDrawerActivity : Activity() {
     }
 
     private fun showInfoDialog() {
-        android.app.AlertDialog.Builder(this)
-            .setTitle("carlauncher")
-            .setMessage(
+        val dp = resources.displayMetrics.density
+        val pad = (20 * dp).toInt()
+        val debug    = DebugStore.load(this)
+        val features = FeatureStore.load(this)
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad, (pad * 0.5f).toInt(), pad, 0)
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        fun sectionHeader(title: String) = TextView(this).apply {
+            text = title
+            textSize = 13f
+            setTextColor(0xFF777777.toInt())
+            setPadding(0, (16 * dp).toInt(), 0, (4 * dp).toInt())
+        }
+
+        // ── Info text ────────────────────────────────────────────────
+        container.addView(TextView(this).apply {
+            text =
                 "To update:\n" +
                 "1. Build a new APK in Android Studio\n" +
                 "2. Copy carlauncher.apk to the root of a USB stick\n" +
@@ -80,8 +105,45 @@ class AppDrawerActivity : Activity() {
                 "5. Tap the update button to install\n\n" +
                 "To favorite an app:\n" +
                 "Long-press any app to add it to the Favorites section at the top."
-            )
-            .setPositiveButton("OK", null)
+            textSize = 14f
+        })
+
+        // ── Features ─────────────────────────────────────────────────
+        container.addView(sectionHeader("Features"))
+
+        val recentAppsBox = CheckBox(this).apply {
+            text = "Show Recent Apps section in drawer"
+            isChecked = features.showRecentApps
+        }
+        container.addView(recentAppsBox)
+
+        // ── Debug (emulator testing) ──────────────────────────────────
+        container.addView(sectionHeader("Simulate indicators (emulator testing)"))
+
+        val fakeBtBox = CheckBox(this).apply {
+            text = "Bluetooth connected"
+            isChecked = debug.fakeBt
+        }
+        container.addView(fakeBtBox)
+
+        val fakeWifiBox = CheckBox(this).apply {
+            text = "WiFi connected"
+            isChecked = debug.fakeWifi
+        }
+        container.addView(fakeWifiBox)
+
+        android.app.AlertDialog.Builder(this)
+            .setTitle("carlauncher")
+            .setView(container)
+            .setPositiveButton("OK") { _, _ ->
+                FeatureStore.save(this, FeatureStore.Features(
+                    showRecentApps = recentAppsBox.isChecked
+                ))
+                DebugStore.save(this, DebugStore.DebugState(
+                    fakeBt   = fakeBtBox.isChecked,
+                    fakeWifi = fakeWifiBox.isChecked
+                ))
+            }
             .show()
     }
 
@@ -127,6 +189,7 @@ class AppDrawerActivity : Activity() {
     private fun launchApp(app: AppInfo) {
         val intent = packageManager.getLaunchIntentForPackage(app.packageName)
         if (intent != null) {
+            RecentAppsStore.recordLaunch(this, app.packageName)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         } else {

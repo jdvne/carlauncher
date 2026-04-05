@@ -19,6 +19,7 @@ private sealed class GridItem {
 class AppGridAdapter(
     private val allApps: List<AppInfo>,
     favorites: Set<String>,
+    private val recentPackages: List<String>,       // ordered most-recent-first
     private val onAppClick: (AppInfo) -> Unit,
     private val onFavoriteToggled: (favorites: Set<String>) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -97,17 +98,37 @@ class AppGridAdapter(
     }
 
     private fun buildItems(): List<GridItem> {
-        val favSet   = currentFavorites
-        val favorites = allApps.filter { it.packageName in favSet }.sortedBy { it.label.lowercase() }
-        val rest      = allApps.filter { it.packageName !in favSet }.sortedBy { it.label.lowercase() }
+        val favPkgs    = currentFavorites
+        val appsByPkg  = allApps.associateBy { it.packageName }
+
+        val favApps    = allApps
+            .filter { it.packageName in favPkgs }
+            .sortedBy { it.label.lowercase() }
+
+        // Recent: preserve launch order, skip anything already in Favorites
+        val recentApps = recentPackages
+            .filter { it !in favPkgs }
+            .mapNotNull { appsByPkg[it] }   // drops uninstalled packages silently
+
+        val recentPkgs = recentApps.map { it.packageName }.toSet()
+
+        val otherApps  = allApps
+            .filter { it.packageName !in favPkgs && it.packageName !in recentPkgs }
+            .sortedBy { it.label.lowercase() }
 
         return buildList {
-            if (favorites.isNotEmpty()) {
+            if (favApps.isNotEmpty()) {
                 add(GridItem.Header("Favorites"))
-                favorites.forEach { add(GridItem.App(it, isFavorite = true)) }
+                favApps.forEach { add(GridItem.App(it, isFavorite = true)) }
+            }
+            if (recentApps.isNotEmpty()) {
+                add(GridItem.Header("Recent"))
+                recentApps.forEach { add(GridItem.App(it, isFavorite = false)) }
+            }
+            if (favApps.isNotEmpty() || recentApps.isNotEmpty()) {
                 add(GridItem.Header("All Apps"))
             }
-            rest.forEach { add(GridItem.App(it, isFavorite = false)) }
+            otherApps.forEach { add(GridItem.App(it, isFavorite = false)) }
         }
     }
 }

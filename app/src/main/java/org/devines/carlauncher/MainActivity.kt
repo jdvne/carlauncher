@@ -6,6 +6,8 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -27,6 +29,7 @@ class MainActivity : Activity() {
     private lateinit var prefs: SharedPreferences
     private lateinit var bluetoothObserver: BluetoothObserver
     private lateinit var bluetoothLabel: TextView
+    private lateinit var wifiIcon: ImageView
     private lateinit var bannerSetDefault: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +52,7 @@ class MainActivity : Activity() {
         bannerSetDefault = findViewById(R.id.bannerSetDefault)
         bannerSetDefault.setOnClickListener { openSetDefaultLauncherScreen() }
 
+        wifiIcon = findViewById(R.id.wifiIcon)
         bluetoothLabel = findViewById(R.id.bluetoothLabel)
         bluetoothObserver = BluetoothObserver(this) { name ->
             runOnUiThread {
@@ -62,16 +66,6 @@ class MainActivity : Activity() {
         }
         startBluetoothObserver()
 
-        // Debug: long-press the clock to toggle a fake BT device (emulator testing only)
-        findViewById<android.widget.TextClock>(R.id.clock).setOnLongClickListener {
-            if (bluetoothLabel.visibility == View.VISIBLE) {
-                bluetoothLabel.visibility = View.GONE
-            } else {
-                bluetoothLabel.text = "Josh's iPhone"
-                bluetoothLabel.visibility = View.VISIBLE
-            }
-            true
-        }
     }
 
     override fun onDestroy() {
@@ -189,6 +183,34 @@ class MainActivity : Activity() {
         super.onResume()
         hideSystemUI()
         bannerSetDefault.visibility = if (isDefaultLauncher()) View.GONE else View.VISIBLE
+        updateWifiIndicator()
+    }
+
+    // ── WiFi indicator ───────────────────────────────────────────────
+
+    private fun updateWifiIndicator() {
+        val debug = DebugStore.load(this)
+
+        val realWifi = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val cm = getSystemService(ConnectivityManager::class.java)
+            val caps = cm.getNetworkCapabilities(cm.activeNetwork)
+            caps?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
+        } else {
+            @Suppress("DEPRECATION")
+            val cm = getSystemService(ConnectivityManager::class.java)
+            cm.activeNetworkInfo?.type == ConnectivityManager.TYPE_WIFI &&
+                cm.activeNetworkInfo?.isConnected == true
+        }
+
+        wifiIcon.visibility = if (debug.fakeWifi || realWifi) View.VISIBLE else View.GONE
+
+        // Override BT label if debug mode is on (real updates still come from BluetoothObserver)
+        if (debug.fakeBt && bluetoothLabel.visibility == View.GONE) {
+            bluetoothLabel.text = "Josh's iPhone"
+            bluetoothLabel.visibility = View.VISIBLE
+        } else if (!debug.fakeBt && bluetoothLabel.text == "Josh's iPhone") {
+            bluetoothLabel.visibility = View.GONE
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
